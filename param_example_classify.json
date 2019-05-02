@@ -1,0 +1,18 @@
+{
+    "MergeBrain_paramfile": "./param_example_mergebrain.json",
+
+    "dst_basedir": "/path/to/result/EXAMPLE/classified/",
+
+    "classifier_name": "clf_dt",
+    "density_img_name": "img_density",
+
+    "#": "Use only 1/num_skip samples to train classifier",
+    "num_skip_training": 10000,
+
+    "#": "The number of clusters to split",
+    "num_clusters": 2,
+
+    "#": "The true cell cluster is the one with largest mean value of this feature",
+    "#": "set 0 for maximize intensity, set 1 for maximize structureness",
+    "i_feature_maximize": 1
+}

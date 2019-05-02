@@ -1,0 +1,13 @@
+{
+    "#": "paramfile_mergebrain for nuclear staining images",
+    "paramfile_nucl": "./param_example_mergebrain.json",
+
+    "#": "paramfile_mergebrain for second channel images",
+    "paramfile_second": "./param_example_mergebrain_AAV.json",
+
+    "#": "output directory",
+    "dst_basedir": "/path/to/result/EXAMPLE/intensities/",
+
+    "#": "path to serialized classifier for nuclear staining images",
+    "clf_file": "./clf_example.pkl"
+}

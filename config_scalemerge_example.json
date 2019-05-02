@@ -1,0 +1,10 @@
+{
+    "--width": "2160",
+    "--height": "2560",
+    "--overlap": "100:100:100:100",
+    "--bin": true,
+    "--scale": "0.05",
+    "--skip-z": "1",
+    "--CCW-rot": true,
+    "--flip-V": true
+}

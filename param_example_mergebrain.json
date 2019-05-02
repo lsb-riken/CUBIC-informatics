@@ -1,0 +1,48 @@
+{
+    "HDoG_paramfile": {
+        "FW": "./param_example_HDoG_FW.json",
+        "RV": "./param_example_HDoG_RV.json"
+    },
+    "dst_basedir": "/path/to/result/EXAMPLE/scalemerged/",
+
+    "merge_info": {
+        "#": "specify the filename at the boundary",
+        "#": "as either string without extension or integer",
+        "boundary_fname": {
+            "FW": "200080",
+            "RV": "200080"
+        },
+        "use_at_boundary": "RV",
+
+        "#": "loaded image is rotated clockwise(rotCW) or",
+        "#": "counterclockwise(rotCCW) and flipped",
+        "#": "horizontally(flipX) or vertically(flipY)",
+        "flip_rot": {
+            "FW": {
+                "flipX": false,
+                "flipY": false,
+                "rotCW": true,
+                "rotCCW": false
+            },
+            "RV": {
+                "flipX": false,
+                "flipY": false,
+                "rotCW": true,
+                "rotCCW": false
+            }
+        }
+    },
+    "scale_info": {
+        "#": "the length of three side of downscaled voxel(um)",
+        "#": "should be divisible by scale_z",
+        "downscale_unit": 80.0,
+
+        "#": "scaled & merged image is flipped in either direction",
+        "flip_rot": {
+            "flipX": false,
+            "flipY": true,
+            "flipZ": false
+        }
+    }
+
+}

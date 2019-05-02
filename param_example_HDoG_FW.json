@@ -1,0 +1,72 @@
+{
+    "src_basedir": "/path/to/src/EXAMPLE/Filter488FW/",
+    "dst_basedir": "/path/to/result/EXAMPLE/candidate/FW/",
+    "gpus": [0,1,2,3],
+
+    "input_image_info": {
+        "width": 2560,
+        "height": 2160,
+
+        "#": "margin should be a positive integer(pixel)",
+        "left_margin": 100,
+        "right_margin": 100,
+        "top_margin": 100,
+        "bottom_margin": 100
+    },
+    "coordinate_info": {
+        "#": "local coordinate(pixel to um)",
+        "#": "global coordinate(um) = local coordinate(pixel) * scale + offset",
+        "scale_x": -0.65,
+        "scale_y": -0.65,
+        "scale_z": 5.0,
+
+        "#": "global coordinate(filename to um)",
+        "#": "origin of local coordinate = Affine_trasform(filename)",
+        "affine_global": [
+            [0.0, 0.1, 0.0, 0],
+            [0.1, 0.0, 0.0, 0],
+            [0.0, 0.0, 5.0, -1000000]
+        ]
+    },
+    "HDoG_param": {
+        "#": "the number of images to be processed at once",
+        "depth": 32,
+        "#": "the number of discarded images because of poor quality",
+        "extra_depth_margin": 3,
+
+        "#": "parameter to adjust size of temporary memory",
+        "#": "increase if the program says so",
+        "cub_tmp_size_factor": 8.001,
+
+        "#": "Every image should have at least following maximum intensity",
+        "min_intensity_skip": 1000,
+
+        "#": "In intensity normalization, background intensity is ",
+        "#": "calculated from neighborhood area with this size",
+        "radius_norm": {
+            "xy_small": 24,
+            "z_small":  3,
+            "xy_large": 100,
+            "z_large":  5
+        },
+
+        "#": "Normalized intensity is zero when original intensity is",
+        "#": "larger than background intensity plus the below value",
+        "min_intensity": 1000,
+
+        "#": "Parameters for scale selection by DoG",
+        "gamma_n": 1.0,
+        "sigma_dog": {
+            "xy_small": 4.0,
+            "z_small": 1.8,
+            "xy_large": 6.0,
+            "z_large": 2.7
+        },
+
+        "#": "Parameters to remove obviously noisy regions from output",
+        "min_size": 10
+    },
+
+    "#": "Parameters for each GPU",
+    "#": "the followings are automatically overwritten by a python script"
+}

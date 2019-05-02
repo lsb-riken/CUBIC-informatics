@@ -1,0 +1,25 @@
+{
+    "MergeBrain_paramfile": "./param_example_mergebrain.json",
+
+    "dst_basedir": "/path/to/result/EXAMPLE/mapped/",
+
+    "#": "ANTs installed directory. antsRegistration and",
+    "#": "antsApplyTransformToPoints is called",
+    "prefix_ANTs": "/usr/local/ants-2.1.0-redhat/",
+
+    "#": "Path to the CUBIC-Atlas reference data",
+    "#": "downloaded from http://cubic-atlas.riken.jp",
+    "atlas_folder": "/path/to/atlas_folder/",
+    "atlas_img_basename": "iso_80um",
+    "atlas_points_basename": "atlas",
+
+    "#": "Voxel size of atlas image(in um)",
+    "#": "should be equal to downscale_unit in parameterfile for merge",
+    "atlas_voxel_unit": 80.0,
+
+    "#": "Maximum distance for annotation",
+    "max_distance": 160.0,
+
+    "#": "Filepath to serialized classifier object",
+    "clf_file": ""
+}
