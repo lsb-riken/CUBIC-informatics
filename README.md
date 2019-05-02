@@ -3,11 +3,14 @@
 ## Getting Started
 
 ### Prerequisites
- * Cmake 2.8
- * GNU Compiler Collection 4.8
- * Python 3.6
- * [CUDA Toolkit 9.0](https://developer.nvidia.com/cuda-toolkit)
- * [ANTs 2.1.0](https://github.com/ANTsX/ANTs/releases)
+Tested on Cent OS 7.5 with the following versions of software.
+
+ * Cmake 2.8.12
+ * GNU Compiler Collection 4.8.5
+ * Python 3.6.4
+ * Julia 0.6.3
+ * [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit) 9.0
+ * [ANTs](https://github.com/ANTsX/ANTs/releases) 2.1.0
 
 ### Downloading source codes
 ```
@@ -30,8 +33,57 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j8
 ```
+### Installing python packages
+```
+pip install -r requirements.txt
+```
 
-### Preparing parameter files
+## Cell/Nucleus detection
+1. Preparing _HDoG_ parameter files for nuclear staining images
+
+    example: `param/param_example_HDoG_FW.json`, `param/param_example_HDoG_RV.json`
+
+2. Preparing _Merge_ parameter file
+
+    example: `param/param_example_mergebrain.json`
+
+3. Preparing _HDoG_ and _Merge_ parameter file as well for other channel images
+
+4. Preparing _MultiChannel_ parameter file
+
+    example: `param/param_example_multichannel.json`
+
+### Tiling check
+```
+python script/MergeBrain.py images param/param_example_mergebrain.json
+```
+
+### Cell candidate detection
+```
+python script/HDoG_gpu.py param/param_example_HDoG_FW.json
+python script/HDoG_gpu.py param/param_example_HDoG_RV.json
+python script/MergeBrain.py cells param/param_example_mergebrain.json
+```
+
+### Candidate verification
 
 
-### Running programs
+### Multi-channel verification
+```
+python script/MultiChannelVerification.py param/param_example_multichannel.json
+```
+
+## Alignment and annotation
+1. Preparing _Mapping_ parameter file
+
+    example: `param/param_example_mapping.json`
+
+### Registration
+```
+python script/AtlasMapping.py registration param/param_example_mapping.json
+```
+
+### Annotation
+```
+python script/AtlasMapping.py annotation param/param_example_mapping.json
+```
