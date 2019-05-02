@@ -17,12 +17,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/common/inc)
+include_directories(${CMAKE_SOURCE_DIR}/common/inc)
 include_directories(${CMAKE_SOURCE_DIR}/cub-1.8.0)
 include_directories(${CMAKE_SOURCE_DIR}/nlohmann)
 
-add_subdirectory(src/2D)
-add_subdirectory(src/2D_cpu)
 add_subdirectory(src/3D)
 add_subdirectory(src/util)
 add_subdirectory(test)

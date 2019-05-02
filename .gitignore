@@ -1,13 +1,9 @@
 *~
-samples
 *.pyc
 *.o
-cellDetection
-cellDetection_cpu
-common
 *.so
 Makefile
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-ScaleMerge
+build/
