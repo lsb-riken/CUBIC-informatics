@@ -12,7 +12,9 @@ Options:
   --version        Show version.
 """
 
-#import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import pandas as pd
@@ -354,8 +356,8 @@ def main():
         density_img.astype(np.uint16)
     )
     print("[*] saved density image to {}".format(img_filename))
-    """
-    fig = plt.figure(figsize=(10,10))
+
+    fig = plt.figure(figsize=(10,5))
     fig.add_subplot(1,2,1)
     plot_classification_result(
         X_whole[::num_skip,0],
@@ -372,7 +374,7 @@ def main():
         params["dst_basedir"],
         "feature_space_{}.png".format(params["classifier_name"])
     ))
-    """
+
     return
 
 if __name__ == "__main__":

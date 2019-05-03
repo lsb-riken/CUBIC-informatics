@@ -101,7 +101,7 @@ def save_temporary_results(evalname, wbc, dst_basedir,
     Only support 32 images in a single stack.
 
     evalname : specify which part of which stack to be used
-    e.g. `pred_CB1_on_850-900_148804_249860_1000-1250_750-1000`
+    e.g. `CB1_on_850-900_148804_249860_1000-1250_750-1000`
     """
     eva = Evaluation(evalname, wbc)
     # select images from top 32 images in substack for evalation

@@ -22,41 +22,12 @@ dt_centroid = np.dtype([
     ('local_x', 'f4'), ('local_y', 'f4'), ('local_z', 'f4'),
 ])
 
-
-def get_original_pred(
-        evalname,
-        pred_img_dir="/export2/Imaging/cuda/20160513/evaluation2",
-        sigmas=(1.8, 4.0, 4.0), evalname_base="predm"
-):
-    pred_img = tifffile.imread("{}/{}.tif".format(
-        pred_img_dir,
-        evalname.replace("pred", evalname_base)
-    ))
-    # richardson-lucy deconvolution
-    psf = np.zeros(np.floor(sigmas).astype(int)*2+1)
-    psf[tuple(np.floor(np.array(psf.shape)/2.).astype(int))] = 1.
-    psf = scipy.ndimage.filters.gaussian_filter(
-        psf, sigma=sigmas, )#truncate=2.)
-    deconv = pred_img.copy().astype(np.float32)
-    for i in range(3):
-        deconv = np.nan_to_num(pred_img*scipy.ndimage.convolve(
-            pred_img / scipy.ndimage.convolve(deconv, psf), psf))
-
-    # peak detection
-    pred_coordinates = peak_local_max(deconv, min_distance=3)
-    data_pred = np.zeros((pred_coordinates.shape[0]), dtype=dt_centroid)
-    data_pred["local_z"] = pred_coordinates[:,0]
-    data_pred["local_y"] = pred_coordinates[:,1]
-    data_pred["local_x"] = pred_coordinates[:,2]
-    print(data_pred.shape)
-    return pred_img, data_pred
-
 class Evaluation(object):
     def __init__(self, evalname, wholebrain_cells=None, data_local=None, halfbrain_images=None, dict_channel_wholebrain_images={},
                  flip_local_x=False, flip_local_y=False, is_ave=False, verbose=True):
         """
         evalname is in the following format :
-        `pred_REGIONNAME_FWorRV_ZLOCALstart-ZLOCALend_YNAME_XNAME_YLOCALstart-YLOCALend_XLOCALstart_XLOCALend`
+        `REGIONNAME_FWorRV_ZLOCALstart-ZLOCALend_YNAME_XNAME_YLOCALstart-YLOCALend_XLOCALstart_XLOCALend`
         * REGIONNAME is a label for human
         * FWorRV should be either `FW`, `off`, `RV` or `on`
         * YNAME,XNAME specify which stack to be used.
@@ -80,7 +51,7 @@ class Evaluation(object):
         for wbi in dict_channel_wholebrain_images.values():
             assert isinstance(wbi, WholeBrainImages)
 
-        _,region_name,FWRV,zlocal,yname,xname,ylocal,xlocal = evalname.split("_")
+        region_name,FWRV,zlocal,yname,xname,ylocal,xlocal = evalname.split("_")
         self.region_name = region_name
         self.xname = xname
         self.yname = yname
@@ -549,34 +520,6 @@ class Evaluation(object):
             print("Cell Density: {}".format(density))
         return {"TP":TP,"FP":FP,"FN":FN,"precision":precision, "recall":recall, "F":Fscore, "density":density}
 
-    def get_murakami(self, result_dir="/export2/Imaging/Murakami/20160513_dsz_MPcontrolIII",
-                     src_dir="/export2/Imaging/20160513"):
-        if self.is_FW:
-            csv_path = "{dir}/thetaoff/Conv_13_3d/{yname}/{yname}_{xname}/result.csv".format(dir=result_dir, xname=self.xname,yname=self.yname)
-            src_path = "{dir}/thetaoff/{yname}/{yname}_{xname}/*.bin".format(dir=src_dir, xname=self.xname,yname=self.yname)
-        else:
-            csv_path = "{dir}/thetaon/Conv_13_3d/{yname}/{yname}_{xname}/result.csv".format(dir=result_dir, xname=self.xname,yname=self.yname)
-            src_path = "{dir}/thetaon/{yname}/{yname}_{xname}/*.bin".format(dir=src_dir, xname=self.xname,yname=self.yname)
-        df = pd.read_csv(csv_path, header=None, names=["X","Y","Z","Intensity"])
-        list_src_path = sorted(glob.glob(src_path))
-        znames = [int(fname.split("/")[-1].split(".")[0]) for fname in list_src_path]
-
-        local_z = np.array((df["Z"] - znames[0])/50)
-        local_x = np.array(df["Y"])
-        local_y = np.array(2160 - df["X"])
-        in_ROI = np.bitwise_and(
-            np.bitwise_and(local_z >= self.local_zlim[0], local_z <= self.local_zlim[1]),
-            np.bitwise_and(
-                np.bitwise_and(local_x >= self.local_xlim[0], local_x <= self.local_xlim[1]),
-                np.bitwise_and(local_y >= self.local_ylim[0], local_y <= self.local_ylim[1])
-            )
-        )
-        data_centroids_m = np.empty(np.count_nonzero(in_ROI), dtype=dt_centroid)
-        data_centroids_m["local_x"] = local_x[in_ROI]-self.local_xlim[0]
-        data_centroids_m["local_y"] = local_y[in_ROI]-self.local_ylim[0]
-        data_centroids_m["local_z"] = local_z[in_ROI]-self.local_zlim[0]
-        return data_centroids_m
-
     def get_perturbed_true(self):
         # return perturbed true points
         data_centroids = self.data_centroids_P + np.random.normal(size=self.data_centroids_P.shape,
@@ -661,174 +604,3 @@ class Evaluation(object):
                    color="k", linestyle="dashed", linewidth=1)
         return {"TP":TP,"FP":FP,"FN":FN,"precision":precision, "recall":recall, "F":Fscore}
 
-
-def calc_score_region(
-        evalname, wbc=None, data_local=None, halfbrain_images=None,
-        clf_base=None, base_algo_name="M", base_evalname="predm",
-        pred_img_dir="/export2/Imaging/cuda/20160513/evaluation2",
-        list_clfs=[], list_clf_names=[], is_ave=False,
-        num_channel=2,
-        cellcount_dir = "/export2/Imaging/cuda/20160513/CellCounter_matsumoto"
-):
-    if wbc is not None:
-        eva = Evaluation(evalname,
-                         wholebrain_cells = wbc,
-                         is_ave=is_ave)
-    elif data_local is not None and halfbrain_images is not None:
-        eva = Evaluation(evalname,
-                         data_local=data_local,
-                         halfbrain_images = halfbrain_images,
-                         is_ave=is_ave)
-    else:
-        raise TypeError
-
-    eva.plot_substack_cells()
-    plt.show()
-
-    xml_path = "{}/CellCounter_{}.xml".format(cellcount_dir,eva.region_name)
-    if not os.path.exists(xml_path):
-        print("Not found:", xml_path)
-        return
-
-    if clf_base:
-        score_base = eva.calc_score_true(
-            xml_path,
-            clf=clf_base,
-            num_channel=num_channel,
-        )
-    else:
-        _,pred_coords = get_original_pred(evalname, pred_img_dir=pred_img_dir, evalname_base=base_evalname)
-        score_base = eva.calc_score_true(
-            xml_path,
-            data=pred_coords,
-            num_channel=num_channel
-        )
-    eva.plot_ROI_cells_xyz()
-
-    #data_local = eva.get_local_from_whole(data_half)
-    #score = eva.calc_score_test(data_local)
-    names = [eva.region_name]
-    algos = [base_algo_name]
-    TPs = [ score_base["TP"]]
-    FPs = [ score_base["FP"]]
-    FNs = [ score_base["FN"]]
-    precisions = [ score_base["precision"]]
-    recalls = [ score_base["recall"]]
-    Fscores = [ score_base["F"]]
-    for clf,clf_name in zip(list_clfs, list_clf_names):
-        _score = eva.calc_score_test(clf=clf, d_th=20)
-        names.append(eva.region_name)
-        algos.append(clf_name)
-        TPs.append(_score["TP"])
-        FPs.append(_score["FP"])
-        FNs.append(_score["FN"])
-        precisions.append(_score["precision"])
-        recalls.append(_score["recall"])
-        Fscores.append(_score["F"])
-
-    df = pd.DataFrame({
-        "name":names,
-        "algorithm":algos,
-        "TP":TPs,
-        "FP":FPs,
-        "FN":FNs,
-        "precision":precisions,
-        "recall":recalls,
-        "F score":Fscores,
-        "log10(cell density)":np.log10([score_base["density"]]*len(names))
-    })
-    return df
-
-def calc_score(
-        list_evalname, wbc, clf_base=None,
-        pred_img_dir="/export2/Imaging/cuda/20160513/evaluation2",
-        list_clfs=[], list_clf_names=[], is_ave=False, num_channel=2,
-        base_algo_name="M", base_evalname="predm",
-        cellcount_dir = "/export2/Imaging/cuda/20160513/CellCounter_matsumoto"
-):
-    df_scores = pd.DataFrame()
-    for evalname in list_evalname:
-        print()
-        print("-"*5,evalname,"-"*5)
-        df_score_region = calc_score_region(
-            evalname = evalname,
-            wbc = wbc,
-            clf_base = clf_base,
-            base_algo_name = base_algo_name,
-            base_evalname=base_evalname,
-            pred_img_dir = pred_img_dir,
-            list_clfs = list_clfs,
-            list_clf_names = list_clf_names,
-            is_ave = is_ave,
-            num_channel = num_channel,
-            cellcount_dir = cellcount_dir)
-        df_scores = pd.concat([df_scores, df_score_region], ignore_index=True)
-        plt.show()
-    return df_scores
-
-def calc_score_region_channel(
-        evalname, wbc, dict_channel_whi, clf_base=None,
-        pred_img_dir="/export2/Imaging/cuda/172746_AAV/evaluation",
-        list_clfs=[], list_clf_names=[], is_ave=False,
-        num_channel=2, base_algo_name="TH", base_evalname="pred",
-        cellcount_dir = "/export2/Imaging/cuda/172746/AAV_count"
-):
-    eva = Evaluation(evalname, wbc,
-                     dict_channel_wholebrain_images=dict_channel_whi,
-                     is_ave=is_ave)
-    eva.plot_substack_cells()
-    plt.show()
-
-    xml_path = "{}/CellCounter_{}.xml".format(cellcount_dir,eva.region_name)
-    if not os.path.exists(xml_path):
-        print("Not found:", xml_path)
-        return
-
-    if clf_base:
-        score_base = eva.calc_score_true(
-            xml_path,
-            clf=clf_base,
-            num_channel=num_channel,
-        )
-    else:
-        _,pred_coords = get_original_pred(evalname, pred_img_dir=pred_img_dir, evalname_base=base_evalname)
-        score_base = eva.calc_score_true(
-            xml_path,
-            data=pred_coords,
-            num_channel=num_channel
-        )
-    eva.plot_ROI_cells_xyz()
-
-    #data_local = eva.get_local_from_whole(data_half)
-    #score = eva.calc_score_test(data_local)
-    names = [eva.region_name]
-    algos = [base_algo_name]
-    TPs = [ score_base["TP"]]
-    FPs = [ score_base["FP"]]
-    FNs = [ score_base["FN"]]
-    precisions = [ score_base["precision"]]
-    recalls = [ score_base["recall"]]
-    Fscores = [ score_base["F"]]
-    for clf,clf_name in zip(list_clfs, list_clf_names):
-        _score = eva.calc_score_test(clf=clf, d_th=20)
-        names.append(eva.region_name)
-        algos.append(clf_name)
-        TPs.append(_score["TP"])
-        FPs.append(_score["FP"])
-        FNs.append(_score["FN"])
-        precisions.append(_score["precision"])
-        recalls.append(_score["recall"])
-        Fscores.append(_score["F"])
-
-    df = pd.DataFrame({
-        "name":names,
-        "algorithm":algos,
-        "TP":TPs,
-        "FP":FPs,
-        "FN":FNs,
-        "precision":precisions,
-        "recall":recalls,
-        "F score":Fscores,
-        "log10(cell density)":np.log10([score_base["density"]]*len(names))
-    })
-    return df
