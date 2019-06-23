@@ -2,6 +2,9 @@
 
 ## Getting Started
 
+### Hardware Prerequisites
+ * One or more NVIDIA GPUs (tested on [compute capability](https://developer.nvidia.com/cuda-gpus) 6.1 and 5.2)
+
 ### Software Prerequisites
 Tested on Cent OS 7.5 with the following versions of software.
 
