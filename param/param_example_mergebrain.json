@@ -1,7 +1,7 @@
 {
     "HDoG_paramfile": {
-        "FW": "./param_example_HDoG_FW.json",
-        "RV": "./param_example_HDoG_RV.json"
+        "FW": "./param/param_example_HDoG_FW.json",
+        "RV": "./param/param_example_HDoG_RV.json"
     },
     "dst_basedir": "/path/to/result/EXAMPLE/scalemerged/",
 

@@ -1,5 +1,5 @@
 {
-    "MergeBrain_paramfile": "./param_example_mergebrain.json",
+    "MergeBrain_paramfile": "./param/param_example_mergebrain.json",
 
     "dst_basedir": "/path/to/result/EXAMPLE/classified/",
 
