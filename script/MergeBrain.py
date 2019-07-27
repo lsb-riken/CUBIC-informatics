@@ -5,14 +5,15 @@
   Downscale images & cells for altas mapping
 
 Usage:
-  MergeBrain.py images PARAM_FILE [-p NUM_CPUS]
+  MergeBrain.py images PARAM_FILE [-p NUM_CPUS] [--exec <path>]
   MergeBrain.py cells PARAM_FILE
-  MergeBrain.py full PARAM_FILE [-p NUM_CPUS]
+  MergeBrain.py full PARAM_FILE [-p NUM_CPUS] [--exec <path>]
 
 Options:
   -h --help        Show this screen.
   --version        Show version.
   -p NUM_CPUS      Number of cpus to be used [default: -1](all available).
+  --exec <path>    Location of the executable [default: ./build/ScaleMerge]
 """
 
 import json, glob, os.path, shutil
@@ -27,19 +28,18 @@ import numpy as np
 from HalfBrainCells import HalfBrainCells
 from HalfBrainImages import HalfBrainImages
 
-path_ScaleMerge_executable = "./ScaleMerge"
 
 dt_scalemerged = np.dtype([
     ('scaled_x','f4'), ('scaled_y', 'f4'), ('scaled_z', 'f4'),
     ('is_valid', 'bool'),
 ])
 
-def run_ScaleMerge(paramfile, mergedfile, logfile=None, print_output=True):
+def run_ScaleMerge(paramfile, mergedfile, path_exec, logfile=None, print_output=True):
     mergedfile_mean,mergedfile_max,mergedfile_min = mergedfile
-    cmd = " ".join([path_ScaleMerge_executable, paramfile,
+    cmd = " ".join([path_exec, paramfile,
                     mergedfile_mean,mergedfile_max,mergedfile_min])
     print("[*] Executing : {}".format(cmd))
-    out = sp.check_output([path_ScaleMerge_executable, paramfile,
+    out = sp.check_output([path_exec, paramfile,
                            mergedfile_mean,mergedfile_max,mergedfile_min])
     if logfile:
         with open(logfile, "wb") as f:
@@ -209,7 +209,7 @@ class WholeBrainImages(object):
             self.param_scalemerge_RV = param_dict
         return
 
-    def scalemerge(self, num_cpus=-1, dry_run=False):
+    def scalemerge(self, num_cpus=-1, dry_run=False, path_exec="./ScaleMerge"):
         print("[*] Starting scalemerge...")
         # Let's start merging FW & RV using boundary information
         scale_z_FW = self.halfbrain_FW.scale_z
@@ -396,7 +396,7 @@ class WholeBrainImages(object):
                       for i,(is_FW,merging_fname) in enumerate(zip(is_FWs, merging_fnames))]
         if not dry_run:
             joblib.Parallel(n_jobs=num_cpus, verbose=10)([
-                joblib.delayed(run_ScaleMerge)(paramfile,mergedfile, print_output=False)
+                joblib.delayed(run_ScaleMerge)(paramfile,mergedfile, path_exec, print_output=False)
                 for paramfile, mergedfile in zip(paramfiles,mergedfiles)
             ])
             print("[*] Concatenating tiff images to single tiff({})".format(self.single_mergedfile_mean))
@@ -588,13 +588,13 @@ def main():
     wb_images = WholeBrainImages(args["PARAM_FILE"])
 
     if args["images"]:
-        wb_images.scalemerge(num_cpus=int(args["-p"]), dry_run=False)
+        wb_images.scalemerge(num_cpus=int(args["-p"]), dry_run=False, path_exec=args["--exec"])
     elif args["cells"]:
-        wb_images.scalemerge(num_cpus=int(args["-p"]), dry_run=True)
+        wb_images.scalemerge(num_cpus=int(args["-p"]), dry_run=True, path_exec=args["--exec"])
         wb_cells = WholeBrainCells(args["PARAM_FILE"], wholebrain_images=wb_images)
         wb_cells.scalemerge()
     elif args["full"]:
-        wb_images.scalemerge(num_cpus=int(args["-p"]), dry_run=False)
+        wb_images.scalemerge(num_cpus=int(args["-p"]), dry_run=False, path_exec=args["--exec"])
         wb_cells = WholeBrainCells(args["PARAM_FILE"], wholebrain_images=wb_images)
         wb_cells.scalemerge()
 
