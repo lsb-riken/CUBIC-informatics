@@ -9,4 +9,4 @@ cuda_add_executable(HDoG3D_main
         ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
 )
 
-install(TARGETS HDoG3D_main RUNTIME DESTINATION bin)
+install(TARGETS HDoG3D_main RUNTIME DESTINATION ".")

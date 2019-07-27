@@ -48,8 +48,9 @@ Build programs under `build` directory. Please change `CUDA_NVCC_FLAGS` in `CMak
 ```
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j8
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=. ..
+make
+make install
 ```
 
 ### Installing python packages
