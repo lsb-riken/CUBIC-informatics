@@ -296,8 +296,6 @@ def main():
         params = json.load(f)
 
     wbc = WholeBrainCells(params["MergeBrain_paramfile"])
-    num_skip = params["num_skip_training"]
-    num_components = params["num_clusters"]
     dst_basedir = params["dst_basedir"]
     dst_basedir_FW = os.path.join(dst_basedir,"FW")
     dst_basedir_RV = os.path.join(dst_basedir,"RV")
@@ -310,19 +308,35 @@ def main():
     print("[*] preparing feature vectors...")
     X_whole = get_X_whole(wbc)
     print("Total candidates:", X_whole.shape[0])
-    print("[*] running unsupervised clustering...")
-    pred_un = predict_unsupervised(
-        X_whole[::num_skip,:],
-        n_components=num_components,
-        i_feature_maximize=params["i_feature_maximize"]
-    )
-    # train supervised decision tree classifier
-    print("[*] training supervised classifier...")
-    clf_dt, pred_dt = train_decision_tree(X_whole[::num_skip], pred_un)
+    num_skip = params["num_skip_samples"]
+
+    if param["use_manual_boundary"]:
+        print("[*] creating manual classifier...")
+        a = int(param["manual_boundary"]["a"])
+        b = int(param["manual_boundary"]["b"])
+        c = int(param["manual_boundary"]["c"])
+        clf = LinearClassifier2D(a,b,c)
+        pred = clf.predict(X_whole[::num_skip])
+
+    else:
+        num_components = params["automatic_boundary"]["num_clusters"]
+        i_feature_maximize = params["automatic_boundary"]["i_feature_maximize"]
+
+        print("[*] running unsupervised clustering...")
+        pred_un = predict_unsupervised(
+            X_whole[::num_skip,:],
+            n_components=num_components,
+            i_feature_maximize=i_feature_maximize
+        )
+        # train supervised decision tree classifier
+        print("[*] training supervised classifier...")
+        clf, pred = train_decision_tree(X_whole[::num_skip], pred_un)
+
+    # save classifier
     clf_filename = os.path.join(
         params["dst_basedir"],
         "{}.pkl".format(params["classifier_name"]))
-    joblib.dump(clf_dt, clf_filename)
+    joblib.dump(clf, clf_filename)
     print("[*] saved the classifier to {}".format(clf_filename))
 
     # save classified results & count total number of cells
@@ -331,13 +345,13 @@ def main():
     for xyname,cellstack in wbc.halfbrain_cells_FW.dict_stacks.items():
         if cellstack.is_dummy: continue
         dst_path = os.path.join(dst_basedir_FW, "{}_{}.pkl".format(xyname[1],xyname[0]))
-        num_cells = save_classified_result_for_stack(dst_path, cellstack, clf_dt)
+        num_cells = save_classified_result_for_stack(dst_path, cellstack, clf)
         dict_num_cells[dst_path] = num_cells
 
     for xyname,cellstack in wbc.halfbrain_cells_RV.dict_stacks.items():
         if cellstack.is_dummy: continue
         dst_path = os.path.join(dst_basedir_RV, "{}_{}.pkl".format(xyname[1],xyname[0]))
-        num_cells = save_classified_result_for_stack(dst_path, cellstack, clf_dt)
+        num_cells = save_classified_result_for_stack(dst_path, cellstack, clf)
         dict_num_cells[dst_path] = num_cells
 
     # save statistics
@@ -347,7 +361,7 @@ def main():
 
     # make cell density image
     print("[*] making cell density image...")
-    density_img = make_density_image(wbc, clf_dt)
+    density_img = make_density_image(wbc, clf)
     img_filename = os.path.join(
         params["dst_basedir"],
         "{}.tif".format(params["density_img_name"]))
@@ -364,12 +378,17 @@ def main():
         X_whole[::num_skip,1],
         pred_un
     )
+    plt.title("unsupervised clustering result")
     fig.add_subplot(1,2,2)
     plot_classification_result(
         X_whole[::num_skip,0],
         X_whole[::num_skip,1],
-        pred_dt
+        pred
     )
+    if param["use_manual_boundary"]:
+        plt.title("manual classification result")
+    else:
+        plt.title("supervised classification result")
     plt.savefig(os.path.join(
         params["dst_basedir"],
         "feature_space_{}.png".format(params["classifier_name"])
