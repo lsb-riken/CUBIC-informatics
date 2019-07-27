@@ -67,9 +67,13 @@ pip install -r requirements.txt
 
     example: `param/param_example_mergebrain.json`
 
-3. Preparing _HDoG_ and _Merge_ parameter file as well for other channel images
+3. Preparing _Classify_ parameter file
 
-4. Preparing _MultiChannel_ parameter file
+    example: `param/param_example_classify.json`
+
+4. Preparing _HDoG_ and _Merge_ parameter file as well for other channel images
+
+5. Preparing _MultiChannel_ parameter file
 
     example: `param/param_example_multichannel.json`
 
@@ -95,7 +99,7 @@ Candidate detection results on each side is merged.
 ```
 python script/HDoG_classify.py param/param_example_classify.json
 ```
-Plot every candidate in feature space and unsupervised clustering is performed to create classifier automatically. You can also create classifier manually.
+Create a classifier with manual decision boundary and plot cell candidates in feature space. By setting `use_manual_boundary` in the parameter file to be `false`, you can also perform unsupervised clustering and create classifier automatically.
 
 ### Multi-channel verification
 ```
@@ -131,3 +135,8 @@ Second argument of the script defines which part of images to be processed. It i
  * `YNAME`,`XNAME` specify which stack to be used.
  * `ZLOCALstart`,`ZLOCALend` specify which images in the stack to be used. 0 corresponds to the first image in the stack.
  * `YLOCALstart`,`YLOCAL_end`,`XLOCALstart`,`XLOCALend` specify which area in images to be used. (0,0) corresponds to the top left pixel.
+
+## Advanced Usage
+If you want to check how the algorithm works, there is a program to test each step in the algorithm. As a python implementation, we have `script/HDoG_cpu.py`.
+
+Also we have CUDA programs for each step. To build these programs, run `make DoG_test` for example and the binary is created under `build/test/` directory.
