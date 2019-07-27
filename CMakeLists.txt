@@ -22,6 +22,5 @@ include_directories(${CMAKE_SOURCE_DIR}/cub-1.8.0)
 include_directories(${CMAKE_SOURCE_DIR}/nlohmann)
 
 add_subdirectory(src/3D)
-add_subdirectory(src/util)
 add_subdirectory(test)
 add_subdirectory(src/ScaleMerge)
