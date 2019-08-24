@@ -310,11 +310,11 @@ def main():
     print("Total candidates:", X_whole.shape[0])
     num_skip = params["num_skip_samples"]
 
-    if param["use_manual_boundary"]:
+    if params["use_manual_boundary"]:
         print("[*] creating manual classifier...")
-        a = int(param["manual_boundary"]["a"])
-        b = int(param["manual_boundary"]["b"])
-        c = int(param["manual_boundary"]["c"])
+        a = int(params["manual_boundary"]["a"])
+        b = int(params["manual_boundary"]["b"])
+        c = int(params["manual_boundary"]["c"])
         clf = LinearClassifier2D(a,b,c)
         pred = clf.predict(X_whole[::num_skip])
 
@@ -385,7 +385,7 @@ def main():
         X_whole[::num_skip,1],
         pred
     )
-    if param["use_manual_boundary"]:
+    if params["use_manual_boundary"]:
         plt.title("manual classification result")
     else:
         plt.title("supervised classification result")
