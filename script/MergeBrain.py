@@ -381,13 +381,13 @@ class WholeBrainImages(object):
         if is_FWs[0]:
             self.bound_z_global_FW = (-np.inf, self.zs_global_FW[self.iz_FW_boundary])
             if is_halfsize:
-                self.bound_z_global_RV = (None, None)
+                self.bound_z_global_RV = (-np.inf, +np.inf)
             else:
                 self.bound_z_global_RV = (self.zs_global_RV[self.iz_RV_boundary], +np.inf)
         else:
             self.bound_z_global_RV = (-np.inf, self.zs_global_RV[self.iz_RV_boundary])
             if is_halfsize:
-                self.bound_z_global_FW = (None, None)
+                self.bound_z_global_FW = (-np.inf, +np.inf)
             else:
                 self.bound_z_global_FW = (self.zs_global_FW[self.iz_FW_boundary], +np.inf)
 
