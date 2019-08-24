@@ -380,10 +380,16 @@ class WholeBrainImages(object):
         # save boundary point for picking valid cell candidates
         if is_FWs[0]:
             self.bound_z_global_FW = (-np.inf, self.zs_global_FW[self.iz_FW_boundary])
-            self.bound_z_global_RV = (self.zs_global_RV[self.iz_RV_boundary], +np.inf)
+            if is_halfsize:
+                self.bound_z_global_RV = (None, None)
+            else:
+                self.bound_z_global_RV = (self.zs_global_RV[self.iz_RV_boundary], +np.inf)
         else:
             self.bound_z_global_RV = (-np.inf, self.zs_global_RV[self.iz_RV_boundary])
-            self.bound_z_global_FW = (self.zs_global_FW[self.iz_FW_boundary], +np.inf)
+            if is_halfsize:
+                self.bound_z_global_FW = (self.zs_global_FW[self.iz_FW_boundary], +np.inf)
+            else:
+                self.bound_z_global_FW = (None, None)
 
         self.merged_depth = len(merging_fnames)
         print("\tmerged depth: {}".format(self.merged_depth))
