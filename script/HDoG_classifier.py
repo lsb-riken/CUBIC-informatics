@@ -121,6 +121,7 @@ def make_density_image(wbc, clf=None, dtype=np.uint16, normalizer_img=None, **kw
     depth = int(np.floor(np.max(data_scalemerged_whole["scaled_z"])))
     height = int(np.floor(np.max(data_scalemerged_whole["scaled_y"])))
     width = int(np.floor(np.max(data_scalemerged_whole["scaled_x"])))
+    print(depth,height,width)
     density_img,_ = np.histogramdd(
         np.vstack([
             data_scalemerged_whole["scaled_z"],
