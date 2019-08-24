@@ -252,10 +252,10 @@ class WholeBrainImages(object):
         if scale_z_FW * scale_z_RV > 0:
             print("[Case 1-4]")
             print("\t scale_z_FW", scale_z_FW)
-            print("\t zs_global_FW[0]:", self.zs_global_FW[0])
-            print("\t zs_global_FW[-1]:", self.zs_global_FW[-1])
-            print("\t zs_global_RV[0]:", self.zs_global_RV[0])
-            print("\t zs_global_RV[-1]:", self.zs_global_RV[-1])
+            print("\t zs_global_FW[0]:", self.zs_global_FW0)
+            print("\t zs_global_FW[-1]:", self.zs_global_FW1)
+            print("\t zs_global_RV[0]:", self.zs_global_RV0)
+            print("\t zs_global_RV[-1]:", self.zs_global_RV1)
             # suppose FW & RV is growing in the same direction,
             # there is 4 scenarios for merging.
             if scale_z_FW > 0 and (is_halfsize or self.zs_global_FW[0] < self.zs_global_RV[0]):
@@ -329,10 +329,10 @@ class WholeBrainImages(object):
             # there is 4 scenarios
             print("[Case 5-8]")
             print("\t scale_z_FW", scale_z_FW)
-            print("\t zs_global_FW[0]:", self.zs_global_FW[0])
-            print("\t zs_global_FW[-1]:", self.zs_global_FW[-1])
-            print("\t zs_global_RV[0]:", self.zs_global_RV[0])
-            print("\t zs_global_RV[-1]:", self.zs_global_RV[-1])
+            print("\t zs_global_FW[0]:", self.zs_global_FW0)
+            print("\t zs_global_FW[-1]:", self.zs_global_FW1)
+            print("\t zs_global_RV[0]:", self.zs_global_RV0)
+            print("\t zs_global_RV[-1]:", self.zs_global_RV1)
             if scale_z_FW < 0 and (is_halfsize or self.zs_global_FW[-1] < self.zs_global_RV[0]):
                 print("->[Case 5]")
                 # [case 5]
