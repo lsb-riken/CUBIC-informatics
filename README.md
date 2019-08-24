@@ -1,5 +1,7 @@
 # CUBIC-informatics
 
+Tutorial for cell/nucleus detection: [see this notebook](https://github.com/lsb-riken/CUBIC-informatics/blob/master/demo.ipynb)
+
 ## Getting Started
 
 ### Hardware Prerequisites
