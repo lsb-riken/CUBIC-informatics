@@ -74,11 +74,11 @@ class WholeBrainImages(object):
         if len(self.zs_FW) > 0:
             self.iz_FW_boundary = self.zs_FW.index(int(fname_boundary_FW))
         else:
-            self.iz_FW_boundary = 0
+            self.iz_FW_boundary = None
         if len(self.zs_RV) > 0:
             self.iz_RV_boundary = self.zs_RV.index(int(fname_boundary_RV))
         else:
-            self.iz_RV_boundary = 0
+            self.iz_RV_boundary = None
 
         print("\t boundary for FW ({}) at i={}".format(fname_boundary_FW, self.iz_FW_boundary))
         print("\t boundary for RV ({}) at i={}".format(fname_boundary_RV, self.iz_RV_boundary))
