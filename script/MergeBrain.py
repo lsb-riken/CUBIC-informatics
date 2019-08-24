@@ -71,9 +71,14 @@ class WholeBrainImages(object):
         # boundary position
         fname_boundary_FW = self.params["merge_info"]["boundary_fname"]["FW"]
         fname_boundary_RV = self.params["merge_info"]["boundary_fname"]["RV"]
-        self.iz_FW_boundary = self.zs_FW.index(int(fname_boundary_FW))
-        self.iz_RV_boundary = self.zs_RV.index(int(fname_boundary_RV))
-        assert self.zs_global_FW[self.iz_FW_boundary] == self.zs_global_FW[self.iz_FW_boundary]
+        if len(self.zs_FW) > 0:
+            self.iz_FW_boundary = self.zs_FW.index(int(fname_boundary_FW))
+        else:
+            self.iz_FW_boundary = 0
+        if len(self.zs_RV) > 0:
+            self.iz_RV_boundary = self.zs_RV.index(int(fname_boundary_RV))
+        else:
+            self.iz_RV_boundary = 0
 
         print("\t boundary for FW ({}) at i={}".format(fname_boundary_FW, self.iz_FW_boundary))
         print("\t boundary for RV ({}) at i={}".format(fname_boundary_RV, self.iz_RV_boundary))
@@ -227,6 +232,23 @@ class WholeBrainImages(object):
         indices_RV = range(len(self.fnames_RV))
         zflip = self.params["scale_info"]["flip_rot"]["flipZ"]
         print("\t z flip: {}".format("on" if zflip else "off"))
+
+        is_halfsize = False
+        if len(zs_global_FW) > 0:
+            zs_global_FW0 = self.zs_global_FW[0]
+            zs_global_FW1 = self.zs_global_FW[-1]
+        else:
+            zs_global_FW0 = None
+            zs_global_FW1 = None
+            is_halfsize = True
+        if len(zs_global_RV) > 0:
+            zs_global_RV0 = self.zs_global_RV[0]
+            zs_global_RV1 = self.zs_global_RV[-1]
+        else:
+            zs_global_RV0 = None
+            zs_global_RV1 = None
+            is_halfsize = True
+
         if scale_z_FW * scale_z_RV > 0:
             print("[Case 1-4]")
             print("\t scale_z_FW", scale_z_FW)
@@ -236,12 +258,13 @@ class WholeBrainImages(object):
             print("\t zs_global_RV[-1]:", self.zs_global_RV[-1])
             # suppose FW & RV is growing in the same direction,
             # there is 4 scenarios for merging.
-            if scale_z_FW > 0 and self.zs_global_FW[0] < self.zs_global_RV[0]:
+            if scale_z_FW > 0 and (is_halfsize or self.zs_global_FW[0] < self.zs_global_RV[0]):
                 print("->[Case 1]")
                 # [case 1]
                 #  merged: |-FW-->|--RV-->
                 #  FW:     |-FW---->
                 #  RV:           |---RV-->
+                # if halfsize, case2 and case1 comes to the same
                 indices_FW_strip = indices_FW[:self.iz_FW_boundary+1][::-1][::self.skip_z_FW][::-1]
                 indices_RV_strip = indices_RV[self.iz_RV_boundary:][::self.skip_z_RV]
 
@@ -267,12 +290,13 @@ class WholeBrainImages(object):
                 is_FWs = [False for _ in indices_RV_strip] + [True for _ in indices_FW_strip]
                 merging_fnames = [self.fnames_RV[i] for i in indices_RV_strip] + [self.fnames_FW[i] for i in indices_FW_strip]
 
-            elif scale_z_FW < 0  and self.zs_global_FW[0] < self.zs_global_RV[0]:
+            elif scale_z_FW < 0  and (is_halfsize or self.zs_global_FW[0] < self.zs_global_RV[0]):
                 print("->[Case 3]")
                 # [case 3] (reverse case 1)
                 #  merged: |-FW-->|--RV-->
                 #  FW:     <-FW----|
                 #  RV:           <---RV--|
+                # if halfsize, case3 and case4 comes to the same
                 indices_FW_strip = indices_FW[self.iz_FW_boundary:][::self.skip_z_FW][::-1]
                 indices_RV_strip = indices_RV[:self.iz_RV_boundary+1][::-1][::self.skip_z_RV]
 
@@ -309,12 +333,13 @@ class WholeBrainImages(object):
             print("\t zs_global_FW[-1]:", self.zs_global_FW[-1])
             print("\t zs_global_RV[0]:", self.zs_global_RV[0])
             print("\t zs_global_RV[-1]:", self.zs_global_RV[-1])
-            if scale_z_FW < 0 and self.zs_global_FW[-1] < self.zs_global_RV[0]:
+            if scale_z_FW < 0 and (is_halfsize or self.zs_global_FW[-1] < self.zs_global_RV[0]):
                 print("->[Case 5]")
                 # [case 5]
                 #  merged: |-FW-->|--RV-->
                 #  FW:     <-FW----|
                 #  RV:           |---RV-->
+                # if halfsize, case5 and case6 comes to the same
                 indices_FW_strip = indices_FW[self.iz_FW_boundary:][::self.skip_z_FW][::-1]
                 indices_RV_strip = indices_RV[self.iz_RV_boundary:][::self.skip_z_RV]
                 if use_FW_at_boundary:
@@ -324,7 +349,7 @@ class WholeBrainImages(object):
                 is_FWs = [True for _ in indices_FW_strip] + [False for _ in indices_RV_strip]
                 merging_fnames = [self.fnames_FW[i] for i in indices_FW_strip] + [self.fnames_RV[i] for i in indices_RV_strip]
 
-            elif scale_z_FW > 0 and self.zs_global_FW[-1] > self.zs_global_RV[0]:
+            elif scale_z_FW > 0 and (is_halfsize or self.zs_global_FW[-1] > self.zs_global_RV[0]):
                 print("->[Case 6]")
                 # [case 6]
                 #  merged: |-RV-->|--FW-->
