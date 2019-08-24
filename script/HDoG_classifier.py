@@ -121,7 +121,6 @@ def make_density_image(wbc, clf=None, dtype=np.uint16, normalizer_img=None, **kw
     depth = int(np.floor(np.max(data_scalemerged_whole["scaled_z"])))
     height = int(np.floor(np.max(data_scalemerged_whole["scaled_y"])))
     width = int(np.floor(np.max(data_scalemerged_whole["scaled_x"])))
-    print(depth,height,width)
     density_img,_ = np.histogramdd(
         np.vstack([
             data_scalemerged_whole["scaled_z"],
@@ -311,6 +310,16 @@ def main():
     print("Total candidates:", X_whole.shape[0])
     num_skip = params["num_skip_samples"]
 
+    num_components = params["automatic_boundary"]["num_clusters"]
+    i_feature_maximize = params["automatic_boundary"]["i_feature_maximize"]
+
+    print("[*] running unsupervised clustering...")
+    pred_un = predict_unsupervised(
+        X_whole[::num_skip,:],
+        n_components=num_components,
+        i_feature_maximize=i_feature_maximize
+    )
+
     if params["use_manual_boundary"]:
         print("[*] creating manual classifier...")
         a = int(params["manual_boundary"]["a"])
@@ -320,15 +329,6 @@ def main():
         pred = clf.predict(X_whole[::num_skip])
 
     else:
-        num_components = params["automatic_boundary"]["num_clusters"]
-        i_feature_maximize = params["automatic_boundary"]["i_feature_maximize"]
-
-        print("[*] running unsupervised clustering...")
-        pred_un = predict_unsupervised(
-            X_whole[::num_skip,:],
-            n_components=num_components,
-            i_feature_maximize=i_feature_maximize
-        )
         # train supervised decision tree classifier
         print("[*] training supervised classifier...")
         clf, pred = train_decision_tree(X_whole[::num_skip], pred_un)
