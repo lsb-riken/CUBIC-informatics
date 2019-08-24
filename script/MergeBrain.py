@@ -554,6 +554,7 @@ class WholeBrainCells(object):
                 smallest_z,largest_z = bound_z[1],bound_z[0]
             else:
                 smallest_z,largest_z = bound_z
+            print("bound:", smallest_z, largest_z)
             data_scaled = np.zeros(cellstack.data_global.shape[0], dtype=dt_scalemerged)
             data_scaled["is_valid"] = np.bitwise_and(
                 smallest_z <= cellstack.data_global["merged_z"],
