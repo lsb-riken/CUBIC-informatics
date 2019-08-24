@@ -133,7 +133,7 @@ class HalfBrainImages(object):
         self.list_zs_global_all = sorted(list(set_zs_global), reverse=self.scale_z < 0)
         #print(self.list_zs_global_all)
         # add dummy image so that all the stacks have the same name set of images
-        if len(list_zs_all) > 0:
+        if len(self.list_zs_all) > 0:
             print("[*] adding dummy images...")
             for stack in self.dict_imagestacks.values():
                 stack.set_all_fnames(self.list_fnames_all)
