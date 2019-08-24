@@ -5,6 +5,9 @@
 ### Hardware Prerequisites
  * One or more NVIDIA GPUs (tested on [compute capability](https://developer.nvidia.com/cuda-gpus) 6.1 and 5.2)
 
+Note that the GPU memory size is critical for performance.
+If your GPUs have less than 11GB memory, you need to adjust the parameters in our source code, which reduce the throughput.
+
 ### Software Prerequisites
 Tested on Cent OS 7.5 with the following versions of software.
 
@@ -37,7 +40,7 @@ cd CUBIC-informatics
 Download CUBIC-Atlas reference data from [here](http://cubic-atlas.riken.jp/).
 
 ### Building C++/CUDA programs
-Some programs use helper functions in CUDA Toolkit. Create a symbolic link in the source directory. The path of CUDA Toolkit depends on your system setup.
+Some programs use helper functions in CUDA Toolkit. Create a symbolic link in the top directory(`CUBIC-informatics/`). The path of CUDA Toolkit depends on your system setup.
 
 ```
 ln -s /usr/local/cuda/samples/common common
