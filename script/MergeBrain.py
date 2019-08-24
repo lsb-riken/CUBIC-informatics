@@ -339,7 +339,6 @@ class WholeBrainImages(object):
                 #  merged: |-FW-->|--RV-->
                 #  FW:     <-FW----|
                 #  RV:           |---RV-->
-                # if halfsize, case5 and case6 comes to the same
                 indices_FW_strip = indices_FW[self.iz_FW_boundary:][::self.skip_z_FW][::-1]
                 indices_RV_strip = indices_RV[self.iz_RV_boundary:][::self.skip_z_RV]
                 if use_FW_at_boundary:
@@ -378,18 +377,15 @@ class WholeBrainImages(object):
             raise TypeError
 
         # save boundary point for picking valid cell candidates
-        if is_FWs[0]:
+        if is_halfsize:
+            self.bound_z_global_FW = (-np.inf, +np.inf)
+            self.bound_z_global_RV = (-np.inf, +np.inf)
+        elif is_FWs[0]:
             self.bound_z_global_FW = (-np.inf, self.zs_global_FW[self.iz_FW_boundary])
-            if is_halfsize:
-                self.bound_z_global_RV = (-np.inf, +np.inf)
-            else:
-                self.bound_z_global_RV = (self.zs_global_RV[self.iz_RV_boundary], +np.inf)
+            self.bound_z_global_RV = (self.zs_global_RV[self.iz_RV_boundary], +np.inf)
         else:
             self.bound_z_global_RV = (-np.inf, self.zs_global_RV[self.iz_RV_boundary])
-            if is_halfsize:
-                self.bound_z_global_FW = (-np.inf, +np.inf)
-            else:
-                self.bound_z_global_FW = (self.zs_global_FW[self.iz_FW_boundary], +np.inf)
+            self.bound_z_global_FW = (self.zs_global_FW[self.iz_FW_boundary], +np.inf)
 
         self.merged_depth = len(merging_fnames)
         print("\tmerged depth: {}".format(self.merged_depth))
@@ -554,7 +550,7 @@ class WholeBrainCells(object):
                 smallest_z,largest_z = bound_z[1],bound_z[0]
             else:
                 smallest_z,largest_z = bound_z
-            print("bound:", smallest_z, largest_z)
+
             data_scaled = np.zeros(cellstack.data_global.shape[0], dtype=dt_scalemerged)
             data_scaled["is_valid"] = np.bitwise_and(
                 smallest_z <= cellstack.data_global["merged_z"],
