@@ -137,9 +137,10 @@ class HalfBrainCells(object):
             len(self.halfbrain_images.list_ynames)
         ))
         print("\tTotal Regions: {}".format(total_regions))
-        print("\tcentroid_x range: {} - {}".format(np.min(self.centroid_xs),np.max(self.centroid_xs)))
-        print("\tcentroid_y range: {} - {}".format(np.min(self.centroid_ys),np.max(self.centroid_ys)))
-        print("\tcentroid_z range: {} - {}".format(np.min(self.centroid_zs),np.max(self.centroid_zs)))
+        if total_regions > 0:
+            print("\tcentroid_x range: {} - {}".format(np.min(self.centroid_xs),np.max(self.centroid_xs)))
+            print("\tcentroid_y range: {} - {}".format(np.min(self.centroid_ys),np.max(self.centroid_ys)))
+            print("\tcentroid_z range: {} - {}".format(np.min(self.centroid_zs),np.max(self.centroid_zs)))
 
     def get_stack_by_xyname(self, xname, yname):
         stack = self.dict_stacks.get((xname,yname), None)
