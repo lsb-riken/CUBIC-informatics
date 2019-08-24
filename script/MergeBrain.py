@@ -234,14 +234,14 @@ class WholeBrainImages(object):
         print("\t z flip: {}".format("on" if zflip else "off"))
 
         is_halfsize = False
-        if len(zs_global_FW) > 0:
+        if len(self.zs_global_FW) > 0:
             zs_global_FW0 = self.zs_global_FW[0]
             zs_global_FW1 = self.zs_global_FW[-1]
         else:
             zs_global_FW0 = None
             zs_global_FW1 = None
             is_halfsize = True
-        if len(zs_global_RV) > 0:
+        if len(self.zs_global_RV) > 0:
             zs_global_RV0 = self.zs_global_RV[0]
             zs_global_RV1 = self.zs_global_RV[-1]
         else:
