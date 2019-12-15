@@ -1,5 +1,8 @@
 # CUBIC-informatics
 
+Relevant Paper:
+> Matsumoto, K., Mitani, T.T., Horiguchi, S.A. et al. Advanced CUBIC tissue clearing for whole-organ cell profiling. Nat Protoc 14, 3506–3537 (2019) [doi:10.1038/s41596-019-0240-9](https://doi.org/10.1038/s41596-019-0240-9)
+
 Tutorial for cell/nucleus detection: [see this notebook](https://github.com/lsb-riken/CUBIC-informatics/blob/master/demo.ipynb)
 
 ## Getting Started
