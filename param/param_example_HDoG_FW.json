@@ -44,8 +44,6 @@
         "#": "In intensity normalization, background intensity is ",
         "#": "calculated from neighborhood area with this size",
         "radius_norm": {
-            "xy_small": 24,
-            "z_small":  3,
             "xy_large": 100,
             "z_large":  5
         },

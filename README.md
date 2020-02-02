@@ -11,7 +11,7 @@ Tutorial for cell/nucleus detection: [see this notebook](https://github.com/lsb-
  * One or more NVIDIA GPUs (tested on [compute capability](https://developer.nvidia.com/cuda-gpus) 6.1 and 5.2)
 
 Note that the GPU memory size is critical for performance.
-If your GPUs have less than 11GB memory, you need to adjust the parameters in our source code, which reduce the throughput.
+If your GPUs have less than 11GB memory, you need to adjust not only the parameters in parameter file but also the costants defined in the source code. c.f. [#2](https://github.com/lsb-riken/CUBIC-informatics/issues/2)
 
 ### Software Prerequisites
 Tested on Cent OS 7.5 with the following versions of software.
