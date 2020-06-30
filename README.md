@@ -19,7 +19,7 @@ Tested on Cent OS 7.5 with the following versions of software.
  * Cmake 2.8.12
  * GNU Compiler Collection 4.8.5
  * Python 3.6.4
- * Julia 0.6.3
+ * Julia 0.6.3 or 1.20
  * [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit) 9.0
  * [ANTs](https://github.com/ANTsX/ANTs/releases) 2.1.0
 
