@@ -115,7 +115,7 @@ function main()
     width = parse(Int, arguments["--width"])
     height = parse(Int, arguments["--height"])
     overlap = arguments["--overlap"]
-    if any(map(x->isnull(tryparse(Float64,x)), split(overlap, ":")))
+    if any(map(x->tryparse(Float64,x) === nothing, split(overlap, ":")))
         println("invalid overlap syntax.")
     end
     skip_z = parse(Int, arguments["--skip-z"])
