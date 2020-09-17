@@ -215,9 +215,9 @@ def show_decision_tree(pipe, feature_names=["intensity","structureness","blobnes
 
 def plot_classification_result(feature_x, feature_y, pred):
     sns.scatterplot(feature_x, feature_y, hue=pred)
-    if np.count_nonzero(pred == 0) > 0:
+    if np.count_nonzero(pred == 0) > 1:
         sns.kdeplot(feature_x[pred==0],feature_y[pred==0], cmap="Blues", shade=True, shade_lowest=False)
-    if np.count_nonzero(pred == 1) > 0:
+    if np.count_nonzero(pred == 1) > 1:
         sns.kdeplot(feature_x[pred==1],feature_y[pred==1], cmap="Oranges", shade=True, shade_lowest=False)
     return
 
