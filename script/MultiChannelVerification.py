@@ -79,7 +79,7 @@ def main():
     if not os.path.exists(os.path.join(params_multichannel["dst_basedir"], "RV")):
         os.makedirs(os.path.join(params_multichannel["dst_basedir"], "RV"))
 
-    joblib.Parallel(n_jobs=args["-p"], verbose=10)( [
+    joblib.Parallel(n_jobs=int(args["-p"]), verbose=10)( [
         joblib.delayed(save_intensities)(
             xyname = (xname,yname),
             resultfile_nucl = os.path.join(result_dir_FW, "{}_{}.bin".format(yname,xname)),
