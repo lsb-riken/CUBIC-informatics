@@ -148,3 +148,9 @@ Second argument of the script defines which part of images to be processed. It i
 If you want to check how the algorithm works, there is a program to test each step in the algorithm. As a python implementation, we have `script/HDoG_cpu.py`.
 
 Also we have CUDA programs for each step. To build these programs, run `make DoG_test` for example and the binary is created under `build/test/` directory.
+
+## Using Docker
+
+```
+    docker compose run dev python script/HDoG_gpu.py param/param_example_HDoG_FW.json
+```
