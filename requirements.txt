@@ -2,7 +2,7 @@ docopt==0.6.2
 ipywidgets==7.4.2
 joblib==0.11
 nibabel==2.3.1
-numpy==1.14.5
+numpy==1.21.0
 pandas==0.22.0
 scikit-image==0.13.1
 scikit-learn==0.20.0
