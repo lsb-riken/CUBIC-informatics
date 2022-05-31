@@ -140,13 +140,11 @@ RUN apt-get update; \
 	rm -rf /var/lib/apt/lists/*
 
 COPY CMakeLists.txt ./
-COPY nlohmann/ ./nlohmann/
+COPY deps/ ./deps/
 COPY src/ ./src/
 COPY test/ ./test/
 
-RUN git clone https://github.com/NVIDIA/cuda-samples.git -b v11.6 --depth 1; \
-    ln -s /workdir/cuda-samples/Common Common; \
-    mkdir build; cd build; \
+RUN mkdir build; cd build; \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=. ..; \
     make; \
     make install; \

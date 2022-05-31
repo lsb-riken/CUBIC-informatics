@@ -70,11 +70,11 @@ void initializeGPU() {
 
   // allocating page-locked host memory
   // h_img: WriteCombined is fast for host->device only
-  h_img = (unsigned short *)malloc(p.image_size*sizeof(unsigned short));
-  h_labels = (int *)malloc(p.image_size*sizeof(int));
-  h_labels_region = (int *)malloc(p.image_size*sizeof(int));
+  checkCudaErrors(cudaHostAlloc(&h_img, p.image_size*sizeof(unsigned short), cudaHostAllocWriteCombined));
+  checkCudaErrors(cudaHostAlloc(&h_labels, p.image_size*sizeof(int), 0));
+  checkCudaErrors(cudaHostAlloc(&h_labels_region, p.image_size*sizeof(int), 0));
+  checkCudaErrors(cudaHostAlloc(&h_size_region, p.image_size*sizeof(unsigned short), 0));
   h_maxnorm_region = (float *)malloc(p.image_size*sizeof(float));
-  h_size_region = (unsigned short *)malloc(p.image_size*sizeof(unsigned short));
   h_eigen_region = (float *)malloc(2*p.image_size*sizeof(float));
   h_grid_region = (float *)malloc(3*p.image_size*sizeof(float));
 
@@ -121,10 +121,11 @@ void finalizeGPU() {
   checkCudaErrors(cudaFree(d_eigen_region));
   checkCudaErrors(cudaFree(d_num_regions));
   checkCudaErrors(cudaFree(d_cub_tmp));
-  free(h_img);
-  free(h_labels);
-  free(h_labels_region);
-  free(h_size_region);
+  checkCudaErrors(cudaFreeHost(h_img));
+  checkCudaErrors(cudaFreeHost(h_labels));
+  checkCudaErrors(cudaFreeHost(h_labels_region));
+  checkCudaErrors(cudaFreeHost(h_size_region));
+  free(h_maxnorm_region);
   free(h_eigen_region);
   free(h_grid_region);
 }
