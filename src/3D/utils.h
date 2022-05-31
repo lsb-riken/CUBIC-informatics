@@ -131,7 +131,7 @@ void loadParamFile(const std::string fname, Parameters &p) {
   p.image_size2D = p.width * p.height;
   j_param.at("extra_depth_margin").get_to(p.extra_depth_margin);
   try {
-    j.at("cub_tmp_size_factor").get_to(p.cub_tmp_size_factor);
+    j_param.at("cub_tmp_size_factor").get_to(p.cub_tmp_size_factor);
   } catch(nlohmann::detail::out_of_range) {
     // nothing
   }

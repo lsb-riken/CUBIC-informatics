@@ -314,16 +314,16 @@ void _HessianFeatures
     // Radix Sort
     temp_storage_bytes = 0;
     cub::DeviceRadixSort::SortPairs(NULL, temp_storage_bytes, d_labels, d_labels_tmp, d_hessian_el, d_hessian_tmp, image_size);
+    // std::cout << "SortPairs@hessian " << temp_storage_bytes << " , " << cub_tmp_bytes << std::endl;
     assert(temp_storage_bytes < cub_tmp_bytes);
-    //std::cout << "SortPairs@hessian " << temp_storage_bytes << std::endl;
     cub::DeviceRadixSort::SortPairs(d_cub_tmp, temp_storage_bytes, d_labels, d_labels_tmp, d_hessian_el, d_hessian_tmp, image_size);
 
     // Regional Reduce
     SumOp sum_op;
     temp_storage_bytes = 0;
     cub::DeviceReduce::ReduceByKey(NULL, temp_storage_bytes, d_labels_tmp, d_labels_reg, d_hessian_tmp, d_hessian_el_reg, d_num_regions, sum_op, image_size);
+    // std::cout << "ReduceByKey@hessian " << temp_storage_bytes << " , " << cub_tmp_bytes << std::endl;
     assert(temp_storage_bytes < cub_tmp_bytes);
-    //std::cout << "ReduceByKey@hessian " << temp_storage_bytes << std::endl;
     cub::DeviceReduce::ReduceByKey(d_cub_tmp, temp_storage_bytes, d_labels_tmp, d_labels_reg, d_hessian_tmp, d_hessian_el_reg, d_num_regions, sum_op, image_size);
   }
 }
