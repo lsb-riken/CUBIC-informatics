@@ -9,3 +9,4 @@ scikit-learn==0.20.0
 scipy==1.0.0
 seaborn==0.9.0
 tifffile==2018.10.18
+graphviz
