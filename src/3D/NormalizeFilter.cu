@@ -37,7 +37,7 @@ constexpr int L_COL_HALO_STEPS = 4;
 // smem_size(uniform) = 4*16*(2+2*4)*8*8 = 40960 < 49152
 constexpr int L_LAY_BLOCKDIM_X = 8;
 constexpr int L_LAY_BLOCKDIM_Y = 8;
-constexpr int L_LAY_BLOCKDIM_Z = 16;
+constexpr int L_LAY_BLOCKDIM_Z = 8;
 constexpr int L_LAY_RESULT_STEPS = 2;
 constexpr int L_LAY_HALO_STEPS = 2;
 
