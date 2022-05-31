@@ -1,4 +1,7 @@
-FROM nvidia/cuda:10.2-devel-ubuntu18.04
+ARG CUDA_VERSION=11.6.0
+ARG OS=ubuntu20.04
+
+FROM nvidia/cuda:${CUDA_VERSION}-devel-${OS}
 
 
 # Install Python
@@ -136,14 +139,12 @@ RUN apt-get update; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-COPY cub-1.8.0/ ./cub-1.8.0/
+COPY CMakeLists.txt ./
 COPY nlohmann/ ./nlohmann/
-COPY script/ ./script/
 COPY src/ ./src/
 COPY test/ ./test/
-COPY CMakeLists.txt ./
 
-RUN git clone https://github.com/NVIDIA/cuda-samples.git -b v10.2 --depth 1; \
+RUN git clone https://github.com/NVIDIA/cuda-samples.git -b v11.6 --depth 1; \
     ln -s /workdir/cuda-samples/Common Common; \
     mkdir build; cd build; \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=. ..; \
