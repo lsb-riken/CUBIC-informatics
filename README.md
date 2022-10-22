@@ -5,6 +5,35 @@ Relevant Paper:
 
 Tutorial for cell/nucleus detection: [see this notebook](https://github.com/lsb-riken/CUBIC-informatics/blob/master/demo.ipynb)
 
+
+## UPDATE: Docker
+Since the original code was dependent on CUDA 9.0, which is too old now, we have updated the programs to work on CUDA 11.6.
+
+Also, we added `Dockerfile` and `docker-compose.yml`. 
+Once you install [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker), you can easily get the environment already set up with python and compiled CUDA programs. You do not need to manually install the CUDA toolkit and build the source code on the host.
+Please refer to [this installation guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) for NVIDIA Container Toolkit and [this guide](https://docs.docker.com/get-started/) for Docker engine.
+
+
+You can use [docker-compose](https://docs.docker.com/compose/) to simplify the handling of Docker containers.
+Once you downloaded this repository by following _Downloading source codes and reference data_ section below,
+Run the following command in the `CUBIC-informatics` directory to build the container.
+
+```
+    docker compose build
+```
+
+Then, skip _Building C++/CUDA programs_ section.
+In _Cell candidate detection_ section, run the following commands (add `docker compose run dev` in front). The computations will start in the container
+
+```
+    docker compose run dev python script/HDoG_gpu.py param/param_example_HDoG_FW.json
+    docker compose run dev python script/HDoG_gpu.py param/param_example_HDoG_RV.json
+```
+
+Since other steps (_Candidate verification_, _Registration_, etc.) do not require the CUDA environment, you can run the python scripts on the host or in the container.
+
+
+
 ## Getting Started
 
 ### Hardware Prerequisites
@@ -31,10 +60,10 @@ Tested on Cent OS 7.5 with the following versions of software.
 
   `/path/to/src/YNAME/YNAME_XNAME/ZNAME.bin`
 
- * `XNAME`,`YNAME` is the number specifies the origin of the stack
+ * `XNAME`,`YNAME` is the number that specifies the origin of the stack
  * `ZNAME` is the slice number
 
-Conversion rule from these names to physical position should be provided in the _HDoG_ parameter files.
+Conversion rule from these names to the physical position should be provided in the _HDoG_ parameter files.
 
 ### Downloading source codes and reference data
 ```
@@ -96,18 +125,18 @@ Whole brain image in TIFF format is created.
 python script/HDoG_gpu.py param/param_example_HDoG_FW.json
 python script/HDoG_gpu.py param/param_example_HDoG_RV.json
 ```
-Cell candidate detection is performed on GPUs for forward side and reverse side.
+Cell candidate detection is performed on GPUs for the forward and reverse sides.
 
 ```
 python script/MergeBrain.py cells param/param_example_mergebrain.json
 ```
-Candidate detection results on each side is merged.
+Candidate detection results on both sides are merged.
 
 ### Candidate verification
 ```
 python script/HDoG_classify.py param/param_example_classify.json
 ```
-Create a classifier with manual decision boundary and plot cell candidates in feature space. By setting `use_manual_boundary` in the parameter file to be `false`, you can also perform unsupervised clustering and create classifier automatically.
+Create a classifier with manual decision boundary and plot cell candidates in feature space. By setting `use_manual_boundary` in the parameter file to be `false`, you can also perform unsupervised clustering and create a classifier automatically.
 
 ### Multi-channel verification
 ```
@@ -134,7 +163,7 @@ python script/AtlasMapping.py annotation param/param_example_mapping.json
 python script/HDoG_intermediate.py param_param_example_mergebrain.json CB1_on_850-900_148804_249860_1000-1250_750-1000
 ```
 
-Second argument of the script defines which part of images to be processed. It is in the following format :
+The second argument of the script defines which part of the images to be processed. It is in the following format :
 
 `REGIONNAME_FWorRV_ZLOCALstart-ZLOCALend_YNAME_XNAME_YLOCALstart-YLOCALend_XLOCALstart_XLOCALend`
 
@@ -147,13 +176,4 @@ Second argument of the script defines which part of images to be processed. It i
 ## Advanced Usage
 If you want to check how the algorithm works, there is a program to test each step in the algorithm. As a python implementation, we have `script/HDoG_cpu.py`.
 
-Also we have CUDA programs for each step. To build these programs, run `make DoG_test` for example and the binary is created under `build/test/` directory.
-
-## Using Docker
-```
-    docker compose build
-```
-
-```
-    docker compose run dev python script/HDoG_gpu.py param/param_example_HDoG_FW.json
-```
+Also, we have CUDA programs for each step. To build these programs, run `make DoG_test`, for example, and the binary is created under `build/test/` directory.
