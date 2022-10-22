@@ -39,7 +39,11 @@ void loadImage(const std::string img_path, std::vector<uint16_t> &img, const int
         std::cout << "Unable to open " << img_path << std::endl;
         exit(2);
       }
-      fread(reinterpret_cast<char *>(temp.data()), sizeof(unsigned short), img.size(), f);
+      size_t ret = fread(reinterpret_cast<char *>(temp.data()), sizeof(unsigned short), img.size(), f);
+      if (ret == 0) {
+        std::cout << "Unable to read " << img_path << std::endl;
+        exit(2);
+      }
       fclose(f);
     } else if(imgformat == 0) {
       // tiff image format

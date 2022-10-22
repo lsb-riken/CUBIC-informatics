@@ -90,11 +90,6 @@ struct Parameters {
   std::vector<std::vector<std::string> > list_src_path;
   std::vector<int> list_stack_length;
   std::vector<std::string> list_dst_path;
-
-  // parameter search
-  int n_search;
-  std::vector<param::RadiusNorm> list_radius_norm;
-  std::vector<param::SigmaDoG> list_sigma_dog;
 };
 
 void loadParamFile(const std::string fname, Parameters &p) {
@@ -105,60 +100,48 @@ void loadParamFile(const std::string fname, Parameters &p) {
   }
   json j;
   param_file >> j;
-  j.at("devID").get_to(p.devID);
-  try {
-    j.at("verbose").get_to(p.verbose);
-  } catch(nlohmann::detail::out_of_range) {
-    // nothing
-  }
+  j.at("devID").get_to<int>(p.devID);
+  if (j.find("verbose") != j.end())
+    j.at("verbose").get_to<bool>(p.verbose);
 
   json j_image = j.at("input_image_info");
-  j_image.at("width").get_to(p.width);
-  j_image.at("height").get_to(p.height);
-  j_image.at("left_margin").get_to(p.left_margin);
-  j_image.at("right_margin").get_to(p.right_margin);
-  j_image.at("top_margin").get_to(p.top_margin);
-  j_image.at("bottom_margin").get_to(p.bottom_margin);
+  j_image.at("width").get_to<int>(p.width);
+  j_image.at("height").get_to<int>(p.height);
+  j_image.at("left_margin").get_to<int>(p.left_margin);
+  j_image.at("right_margin").get_to<int>(p.right_margin);
+  j_image.at("top_margin").get_to<int>(p.top_margin);
+  j_image.at("bottom_margin").get_to<int>(p.bottom_margin);
 
   json j_coord = j.at("coordinate_info");
-  j_coord.at("scale_x").get_to(p.scale_x);
-  j_coord.at("scale_y").get_to(p.scale_y);
-  j_coord.at("scale_z").get_to(p.scale_z);
+  j_coord.at("scale_x").get_to<float>(p.scale_x);
+  j_coord.at("scale_y").get_to<float>(p.scale_y);
+  j_coord.at("scale_z").get_to<float>(p.scale_z);
 
   json j_param = j.at("HDoG_param");
-  j_param.at("depth").get_to(p.depth);
+  j_param.at("depth").get_to<int>(p.depth);
   p.image_size = p.width * p.height * p.depth;
   p.image_size2D = p.width * p.height;
-  j_param.at("extra_depth_margin").get_to(p.extra_depth_margin);
-  try {
-    j_param.at("cub_tmp_size_factor").get_to(p.cub_tmp_size_factor);
-  } catch(nlohmann::detail::out_of_range) {
-    // nothing
-  }
+  j_param.at("extra_depth_margin").get_to<int>(p.extra_depth_margin);
+  if (j_param.find("cub_tmp_size_factor") != j_param.end())
+    j_param.at("cub_tmp_size_factor").get_to<float>(p.cub_tmp_size_factor);
   p.cub_tmp_bytes = p.image_size * p.cub_tmp_size_factor;
 
-  try {
-    j_param.at("min_intensity_skip").get_to(p.min_intensity_skip);
-  } catch(nlohmann::detail::out_of_range) {
-    // nothing
-  }
+  if (j_param.find("min_intensity_skip") != j_param.end())
+    j_param.at("min_intensity_skip").get_to<unsigned short>(p.min_intensity_skip);
   std::cout << "min_intensity_skip:" << p.min_intensity_skip << std::endl;
 
-  j_param.at("radius_norm").get_to(p.radius_norm);
-  j_param.at("min_intensity").get_to(p.min_intensity_truncate);
+  j_param.at("radius_norm").get_to<param::RadiusNorm>(p.radius_norm);
+  j_param.at("min_intensity").get_to<unsigned short>(p.min_intensity_truncate);
   std::cout << "min_intensity:" << p.min_intensity_truncate << std::endl;
 
-  j_param.at("gamma_n").get_to(p.gamma_n);
-  j_param.at("sigma_dog").get_to(p.sigma_dog);
+  j_param.at("gamma_n").get_to<float>(p.gamma_n);
+  j_param.at("sigma_dog").get_to<param::SigmaDoG>(p.sigma_dog);
 
-  j_param.at("min_size").get_to(p.min_size);
+  j_param.at("min_size").get_to<unsigned short>(p.min_size);
   std::cout << "min_size:" << p.min_size << std::endl;
 
-  try {
-    j.at("is_ave_mode").get_to(p.is_ave_mode);
-  } catch(nlohmann::detail::out_of_range) {
-    // nothing
-  }
+  if (j.find("is_ave_mode") != j.end())
+    j.at("is_ave_mode").get_to<bool>(p.is_ave_mode);
 
   json j_stacks = j.at("stacks");
   p.n_stack = j_stacks.size();
@@ -166,31 +149,8 @@ void loadParamFile(const std::string fname, Parameters &p) {
     json j_src = j_st->at("src_paths");
     p.list_stack_length.push_back(j_src.size());
     p.list_src_path.emplace_back();
-    j_src.get_to(p.list_src_path.back());
+    j_src.get_to<std::vector<std::string>>(p.list_src_path.back());
     p.list_dst_path.push_back(j_st->at("dst_path").get<std::string>());
-  }
-
-  try {
-    json j_search = j.at("parameter_search");
-    p.n_search = j_search.size();
-    for (json::iterator j_s = j_search.begin(); j_s != j_search.end(); ++j_s) {
-      // radius norm
-      try {
-        json j_search_norm = j_s->at("radius_norm");
-        p.list_radius_norm.push_back(j_search_norm.get<param::RadiusNorm>());
-      } catch(nlohmann::detail::out_of_range) {
-        p.list_radius_norm.push_back(p.radius_norm);
-      }
-      // sigma dog
-      try {
-        json j_search_dog = j_s->at("sigma_dog");
-        p.list_sigma_dog.push_back(j_search_dog.get<param::SigmaDoG>());
-      } catch(nlohmann::detail::out_of_range) {
-        p.list_sigma_dog.push_back(p.sigma_dog);
-      }
-    }
-  } catch(nlohmann::detail::out_of_range) {
-    p.n_search = 0;
   }
 
   return;
@@ -204,7 +164,11 @@ void loadImage(const std::string fname, const unsigned short *h_img, const int i
     std::cout << "Unable to open " << fname << std::endl;
     exit(2);
   }
-  fread((char *)h_img, sizeof(unsigned short), image_size2D, f);
+  size_t ret = fread((char *)h_img, sizeof(unsigned short), image_size2D, f);
+  if (ret == 0) {
+    std::cout << "Unable to read " << fname << std::endl;
+    exit(2);
+  }
   fclose(f);
 }
 

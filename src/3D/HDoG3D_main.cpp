@@ -73,10 +73,10 @@ void initializeGPU() {
   checkCudaErrors(cudaHostAlloc(&h_img, p.image_size*sizeof(unsigned short), cudaHostAllocWriteCombined));
   checkCudaErrors(cudaHostAlloc(&h_labels, p.image_size*sizeof(int), 0));
   checkCudaErrors(cudaHostAlloc(&h_labels_region, p.image_size*sizeof(int), 0));
-  checkCudaErrors(cudaHostAlloc(&h_maxnorm_region, p.image_size*sizeof(float), 0));
   checkCudaErrors(cudaHostAlloc(&h_size_region, p.image_size*sizeof(unsigned short), 0));
-  checkCudaErrors(cudaHostAlloc(&h_eigen_region, 2*p.image_size*sizeof(float), 0));
-  checkCudaErrors(cudaHostAlloc(&h_grid_region, 3*p.image_size*sizeof(float), 0));
+  h_maxnorm_region = (float *)malloc(p.image_size*sizeof(float));
+  h_eigen_region = (float *)malloc(2*p.image_size*sizeof(float));
+  h_grid_region = (float *)malloc(3*p.image_size*sizeof(float));
 
   // prepare device memory
   checkCudaErrors(cudaMalloc((void **)&d_img, (p.image_size*sizeof(unsigned short))));
@@ -125,8 +125,9 @@ void finalizeGPU() {
   checkCudaErrors(cudaFreeHost(h_labels));
   checkCudaErrors(cudaFreeHost(h_labels_region));
   checkCudaErrors(cudaFreeHost(h_size_region));
-  checkCudaErrors(cudaFreeHost(h_eigen_region));
-  checkCudaErrors(cudaFreeHost(h_grid_region));
+  free(h_maxnorm_region);
+  free(h_eigen_region);
+  free(h_grid_region);
 }
 
 
@@ -293,10 +294,11 @@ int main(int argc, char** argv) {
   for(int i_stack = 0; i_stack < p.n_stack; i_stack++) {
     if (remove(p.list_dst_path[i_stack].c_str()) == 0) {
       // because result is written in append mode, the file is removed beforehand
-      std::cout << "removed previous result" << std::endl;
+      std::cout << "removed previous result " << i_stack << std::endl;
     } else {
-      std::cout << "newly create result" << std::endl;
+      std::cout << "newly create result " << i_stack << std::endl;
     }
+    std::cout << "length: " << p.list_stack_length[i_stack] << std::endl;
 
     // one stack(`length` images) is partitioned into many substacks.
     // substacks(`depth` images) have overlap with neighboring substacks.

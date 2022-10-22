@@ -12,7 +12,7 @@ Options:
   PARAM_FILE     : Parameter file
   --zmin <ZMIN>  : Skip first <ZMIN> images from top (optional)
   --zmax <ZMAX>  : Skip after <ZMAX> images from top (optional)
-  --exec <path>  : Specify the location of the executable (optional) [default: ./build/HDoG3D_main]
+  --exec <path>  : Specify the location of the executable (optional) [default: /usr/local/bin/HDoG3D_main]
 """
 
 import os, os.path, glob, sys

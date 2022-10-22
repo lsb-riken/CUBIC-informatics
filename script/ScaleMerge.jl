@@ -6,7 +6,7 @@ Usage:
                 [--width <w>] [--height <h>] [--overlap <L:R:T:B>]
                 [--scale <ratio>] [--skip-z <num>] [--grid]
                 [--CW-rot|--CCW-rot] [--V-flip] [--H-flip] [--flip-V] [--flip-H]
-                [--config <json>]
+                [--config <json>] [--exec <path>]
   ScaleMerge.jl (-h | --help)
   ScaleMerge.jl --version
 
@@ -28,6 +28,7 @@ Options:
   --flip-V               Flip vertically after merging.
   --flip-H               Flip horizontally after merging.
   --config <json>        Load configuration in json format.
+  --exec <path>          Location of the executable [default: /usr/local/bin/ScaleMerge]
 """
 
 using DocOpt
@@ -110,6 +111,7 @@ function main()
         #    println("\t$(k) : $(v)")
         #end
     end
+    exec = arguments["--exec"]
     basedir = arguments["<srcdir>"]
     outdir = arguments["<outdir>"]
     width = parse(Int, arguments["--width"])
@@ -152,7 +154,7 @@ function main()
         writeParamFile(paramfile, zname, imgdict, ylist, xlist, basedir,
                        width, height, sampling_rate, String(overlap), flip_rot_before, flip_rot_after, imgformat, showgrid)
     end
-    pmap((paramfile,mergedfile)->run(`./ScaleMerge $paramfile $mergedfile`), paramfiles,mergedfiles)
+    pmap((paramfile,mergedfile)->run(`$exec $paramfile $mergedfile`), paramfiles,mergedfiles)
     map((paramfile)->rm(paramfile), paramfiles)
 end
 

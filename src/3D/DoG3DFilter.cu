@@ -53,7 +53,7 @@ float sigma_kernel[4];
 // sigma should be < 8*2/2
 #define   LAYERS_BLOCKDIM_X 8
 #define   LAYERS_BLOCKDIM_Y 8
-#define   LAYERS_BLOCKDIM_Z 8
+#define   LAYERS_BLOCKDIM_Z 4
 #define   LAYERS_RESULT_STEPS 4
 #define   LAYERS_HALO_STEPS 2
 

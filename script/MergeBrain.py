@@ -13,7 +13,7 @@ Options:
   -h --help        Show this screen.
   --version        Show version.
   -p NUM_CPUS      Number of cpus to be used [default: -1](all available).
-  --exec <path>    Location of the executable [default: ./build/ScaleMerge]
+  --exec <path>    Location of the executable [default: /usr/local/bin/ScaleMerge]
 """
 
 import json, glob, os.path, shutil
