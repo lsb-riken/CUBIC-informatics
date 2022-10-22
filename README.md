@@ -13,8 +13,8 @@ Also, we added `Dockerfile` and `docker-compose.yml`.
 Once you install [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker), you can easily get the environment already set up with python and compiled CUDA programs. You do not need to manually install the CUDA toolkit and build the source code on the host.
 Please refer to [this installation guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) for NVIDIA Container Toolkit and [this guide](https://docs.docker.com/get-started/) for Docker engine.
 
+We recommend using [docker-compose](https://docs.docker.com/compose/) to simplify the handling of Docker containers. We explain below how to use the Docker container with docker-compose.
 
-You can use [docker-compose](https://docs.docker.com/compose/) to simplify the handling of Docker containers.
 Once you downloaded this repository by following _Downloading source codes and reference data_ section below,
 Run the following command in the `CUBIC-informatics` directory to build the container.
 
